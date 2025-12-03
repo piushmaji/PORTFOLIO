@@ -1,16 +1,65 @@
-# React + Vite
+# Piush Maji Portfolio Website
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A personal portfolio website showcasing my skills, projects, and contact information in a modern and professional design.
 
-Currently, two official plugins are available:
+[Live Demo](https://piushmaji.vercel.app/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Table of Contents
 
-## React Compiler
+- [About](#about)  
+- [Skills](#skills)  
+- [Projects](#projects)  
+- [Resume](#resume)  
+- [Contact](#contact)  
+- [Technologies Used](#technologies-used)  
+- [Getting Started](#getting-started)  
+- [License](#license)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## About
 
-## Expanding the ESLint configuration
+This portfolio website highlights my journey as a tech enthusiast and aspiring software engineer. It features my skills, projects, and professional background in a clean, user-friendly interface.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Skills
+
+- **Programming:** C++, Python, JavaScript, React.js  
+- **Web Development:** HTML, CSS, JavaScript, React  
+- **Design:** Graphic Design, Photo Editing, UI/UX Concepts  
+- **Tools:** Git, VS Code, Figma, Canva
+
+## Projects
+
+1. **Love Calculator Website**  
+   - Fun and interactive website to calculate love compatibility.  
+   - Features a clean UI with instant results.  
+
+2. **Secret Talk**  
+   - Anonymous chat website with polls, emotion posts, and AI chatbot.  
+   - Users can interact without revealing identity.  
+
+3. **Portfolio Website**  
+   - Personal portfolio to showcase skills, projects, and contact details.  
+   - Clean, professional, and responsive design.  
+   - [Live Demo](https://piushmaji.vercel.app/)
+
+## Resume
+
+You can view and download my [resume](#) here.
+
+## Contact
+
+- **Email:** [your.email@example.com](mailto:your.email@example.com)  
+- **LinkedIn:** [Piush Maji](https://www.linkedin.com/)  
+- **GitHub:** [Griffin_Byte](https://github.com/)  
+- **Twitter:** [@username](https://twitter.com/)  
+
+## Technologies Used
+
+- **Frontend:** HTML, CSS, JavaScript, React.js  
+- **Design & Editing:** Figma, Canva, Adobe Tools  
+- **Version Control:** Git, GitHub  
+
+## Getting Started
+
+1. Clone the repository:  
+   ```bash
+   git clone https://github.com/username/portfolio-website.git
