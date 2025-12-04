@@ -107,6 +107,7 @@ export default function Footer() {
                                 <a
                                     key={index}
                                     href={href}
+                                    target="_blank"
                                     className="group flex flex-col items-center justify-center gap-2 p-4 bg-white/5 border border-white/10 rounded-xl hover:border-orange-500/30 hover:bg-orange-500/5 transition-all duration-300"
                                 >
                                     <Icon className="w-5 h-5 text-gray-400 group-hover:text-orange-400 transition-colors" />
