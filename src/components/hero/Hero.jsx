@@ -1,10 +1,8 @@
 import { ExternalLink, Gem, Link, Menu, } from 'lucide-react'
 import Spline from '@splinetool/react-spline'
-import Header from './Header'
 const Hero = () => {
     return (
         <>
-            <Header />
             <main className=" flex lg:mt-20 flex-col lg:flex-row items-center justify-between min-h-[calc(90vh-6rem)]">
 
                 <div data-aos="fade-right"

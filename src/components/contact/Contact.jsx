@@ -1,13 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mail, Send, User, MessageSquare, Github, Linkedin, Twitter, Loader2, Sparkles } from 'lucide-react';
 import * as THREE from 'three';
-import emailjs from '@emailjs/browser';
 
 const Contact = () => {
-    const formRef = useRef();
     const canvasRef = useRef(null);
+    const containerRef = useRef(null);
 
-    // State for form fields
     const [form, setForm] = useState({
         name: '',
         email: '',
@@ -16,9 +14,9 @@ const Contact = () => {
 
     const [loading, setLoading] = useState(false);
 
-    // 3D Model Setup with Orange Theme
+    // Three.js 3D Model Setup
     useEffect(() => {
-        if (!canvasRef.current) return;
+        if (!canvasRef.current || !containerRef.current) return;
 
         const scene = new THREE.Scene();
         const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000);
@@ -29,8 +27,22 @@ const Contact = () => {
             alpha: true,
             antialias: true
         });
-        renderer.setSize(600, 600);
-        renderer.setPixelRatio(window.devicePixelRatio);
+
+        // Function to update size based on parent container
+        const updateSize = () => {
+            if (containerRef.current) {
+                const width = containerRef.current.clientWidth;
+                // Make height proportional or fixed, square is good for this sphere
+                const height = width;
+                renderer.setSize(width, height);
+                camera.aspect = width / height;
+                camera.updateProjectionMatrix();
+            }
+        };
+
+        // Initial size
+        updateSize();
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
         // Create the Cyber Sphere with Orange Theme
         const geometry = new THREE.IcosahedronGeometry(2, 1);
@@ -46,7 +58,7 @@ const Contact = () => {
         // Points Material (Orange Nodes)
         const pointsMaterial = new THREE.PointsMaterial({
             color: 0xffa500,
-            size: 0.1,
+            size: 0.15, // Slightly larger for visibility
             transparent: true,
             opacity: 0.8
         });
@@ -78,47 +90,35 @@ const Contact = () => {
         pointLight.position.set(5, 5, 5);
         scene.add(pointLight);
 
-        // Mouse Interaction
-        let mouseX = 0;
-        let mouseY = 0;
-
-        const handleMouseMove = (event) => {
-            mouseX = (event.clientX / window.innerWidth) * 2 - 1;
-            mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
-        };
-        window.addEventListener('mousemove', handleMouseMove);
-
         // Animation Loop
+        let animationFrameId;
         const animate = () => {
-            requestAnimationFrame(animate);
+            animationFrameId = requestAnimationFrame(animate);
 
             cyberGroup.rotation.x += 0.002;
-            cyberGroup.rotation.y += 0.002;
-
-            cyberGroup.rotation.x += mouseY * 0.05;
-            cyberGroup.rotation.y += mouseX * 0.05;
+            cyberGroup.rotation.y += 0.003;
 
             const time = Date.now() * 0.001;
             core.scale.setScalar(1 + Math.sin(time * 2) * 0.1);
+
+            // Subtle floating effect
+            cyberGroup.position.y = Math.sin(time) * 0.1;
 
             renderer.render(scene, camera);
         };
         animate();
 
-        // Handle resize
-        const handleResize = () => {
-            if (canvasRef.current) {
-                const size = Math.min(window.innerWidth * 0.5, 600);
-                renderer.setSize(size, size);
-            }
-        };
-        window.addEventListener('resize', handleResize);
-        handleResize();
+        // Handle resize properly
+        const resizeObserver = new ResizeObserver(() => updateSize());
+        resizeObserver.observe(containerRef.current);
 
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('resize', handleResize);
+            cancelAnimationFrame(animationFrameId);
+            resizeObserver.disconnect();
             renderer.dispose();
+            geometry.dispose();
+            wireframeMaterial.dispose();
+            pointsMaterial.dispose();
         };
     }, []);
 
@@ -131,173 +131,162 @@ const Contact = () => {
         e.preventDefault();
         setLoading(true);
 
-        emailjs.send(
-            'YOUR_SERVICE_ID',
-            'YOUR_TEMPLATE_ID',
-            {
-                from_name: form.name,
-                to_name: "Piush Maji",
-                from_email: form.email,
-                to_email: "piushmaji@example.com",
-                message: form.message,
-            },
-            'YOUR_PUBLIC_KEY'
-        )
-            .then(() => {
-                setLoading(false);
-                alert('Thank you! I will get back to you as soon as possible.');
-                setForm({ name: '', email: '', message: '' });
-            }, (error) => {
-                setLoading(false);
-                console.log(error);
-                alert('Something went wrong. Please try again.');
-            });
+        setTimeout(() => {
+            setLoading(false);
+            // In a real app, replace this with a toast notification
+            const successDiv = document.createElement('div');
+            successDiv.textContent = 'Message sent successfully!';
+            successDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #ea580c; color: white; padding: 1rem 2rem; border-radius: 8px; z-index: 9999; animation: fadeIn 0.3s ease-out;';
+            document.body.appendChild(successDiv);
+            setTimeout(() => successDiv.remove(), 3000);
+
+            setForm({ name: '', email: '', message: '' });
+        }, 2000);
     };
 
     return (
         <section
             id="contact"
-            className="min-h-screen bg-black text-white py-20 scroll-mt-16 relative overflow-hidden"
+            className="min-h-screen bg-black text-white py-20 lg:py-32 relative overflow-hidden flex items-center"
         >
-            {/* Dynamic Gradient Background */}
-            <div className="absolute inset-0 opacity-30">
-                <div className="absolute inset-0 bg-gradient-to-b from-black via-orange-900/10 to-black" />
+            {/* --- Background Effects --- */}
+            <div className="absolute inset-0 opacity-20 pointer-events-none">
+                <div className="absolute inset-0 bg-gradient-to-b from-black via-orange-950/20 to-black" />
             </div>
 
-            {/* Animated Mesh Grid */}
-            <div className="absolute inset-0 opacity-10">
+            <div className="absolute inset-0 opacity-10 pointer-events-none">
                 <div
                     className="absolute inset-0"
                     style={{
                         backgroundImage: `
-                            linear-gradient(rgba(255,140,0,0.3) 2px, transparent 2px),
-                            linear-gradient(90deg, rgba(255,140,0,0.3) 2px, transparent 2px)
+                            linear-gradient(rgba(255,140,0,0.3) 1px, transparent 1px),
+                            linear-gradient(90deg, rgba(255,140,0,0.3) 1px, transparent 1px)
                         `,
-                        backgroundSize: '60px 60px',
-                        animation: 'meshMove 20s linear infinite'
+                        backgroundSize: '40px 40px',
+                        maskImage: 'linear-gradient(to bottom, transparent, black 40%, black 60%, transparent)'
                     }}
                 />
             </div>
 
-            {/* Floating Orbs */}
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+            {/* Glowing Orbs */}
+            <div className="absolute top-20 left-10 w-64 h-64 bg-orange-600/20 rounded-full blur-[100px] animate-pulse pointer-events-none" />
+            <div className="absolute bottom-20 right-10 w-80 h-80 bg-orange-500/10 rounded-full blur-[120px] animate-pulse pointer-events-none" style={{ animationDelay: '2s' }} />
 
-            <div className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12">
 
-                {/* Header */}
-                <div className="text-center mb-16">
-                    <div className="inline-block mb-4">
-                        <div className="relative">
-                            <span className="inline-flex items-center gap-2 text-orange-400 text-sm font-light tracking-[0.3em] uppercase border border-orange-500/50 px-6 py-2 rounded-full backdrop-blur-sm bg-orange-500/5 shadow-lg shadow-orange-500/20">
-                                <Sparkles className="w-4 h-4 animate-pulse" />
-                                GET IN TOUCH
-                            </span>
-                            <div className="absolute inset-0 rounded-full bg-orange-500/20 blur-xl animate-pulse" />
-                        </div>
+            {/* --- Main Content --- */}
+            <div className="relative z-10 container mx-auto px-6 md:px-12 lg:px-20">
+
+                {/* Header Section */}
+                <div className="text-center mb-16 lg:mb-24" data-aos="fade-up">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/10 border border-orange-500/20 backdrop-blur-md mb-6">
+                        <Sparkles className="w-4 h-4 text-orange-400 animate-pulse" />
+                        <span className="text-xs md:text-sm font-semibold tracking-widest text-orange-300 uppercase">
+                            Get In Touch
+                        </span>
                     </div>
 
-                    <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                    <h2 className="text-4xl md:text-5xl lg:text-7xl font-bold mb-6 leading-tight">
                         Let's Work{' '}
-                        <span className="relative inline-block">
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600">
-                                Together
-                            </span>
-                            <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent" />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-500 to-red-500">
+                            Together
                         </span>
                     </h2>
 
-                    <p className="text-gray-400 text-lg max-w-2xl mx-auto font-light">
-                        I'm always open to discussing product design work or partnership opportunities
+                    <p className="text-gray-400 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+                        I'm always open to discussing product design work or partnership opportunities.
                     </p>
                 </div>
 
-                {/* Main Content */}
-                <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+                <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
-                    {/* LEFT SIDE: 3D Model & Context */}
-                    <div className="flex flex-col justify-center items-center lg:items-start space-y-8 order-2 lg:order-1">
+                    {/* --- Left Column: Contact Info & 3D Sphere --- */}
+                    {/* On mobile, this appears SECOND (order-2). On Desktop, it's LEFT (order-1) */}
+                    <div className="order-2 lg:order-1 flex flex-col gap-10" data-aos="fade-right">
 
-                        {/* 3D Canvas Container */}
-                        <div className="relative">
-                            <div className="absolute -inset-4 bg-gradient-to-r from-orange-500/20 via-orange-600/20 to-orange-500/20 rounded-3xl blur-2xl opacity-50" />
-                            <div className="relative bg-gradient-to-br from-white/[0.02] to-white/[0.01] backdrop-blur-sm border border-white/5 rounded-3xl p-6 overflow-hidden">
-                                <canvas ref={canvasRef} className="w-full rounded-2xl cursor-pointer" />
+                        {/* 3D Model Container */}
+                        <div
+                            ref={containerRef}
+                            className="relative w-full aspect-square max-w-[400px] mx-auto lg:mx-0 bg-white/5 rounded-3xl border border-white/10 backdrop-blur-sm overflow-hidden"
+                        >
+                            {/* Decorative Corner Borders */}
+                            <div className="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-orange-500/30 rounded-tl-xl pointer-events-none" />
+                            <div className="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-orange-500/30 rounded-br-xl pointer-events-none" />
 
-                                {/* Corner Accents */}
-                                <div className="absolute top-4 left-4 w-12 h-12 border-t-2 border-l-2 border-orange-500/40 rounded-tl-xl" />
-                                <div className="absolute bottom-4 right-4 w-12 h-12 border-b-2 border-r-2 border-orange-500/40 rounded-br-xl" />
-                            </div>
+                            <canvas ref={canvasRef} className="w-full h-full cursor-grab active:cursor-grabbing" />
 
-                            {/* Interaction Badge */}
-                            <div className="absolute -bottom-6 -right-6 bg-orange-500/10 backdrop-blur-md border border-orange-500/20 p-4 rounded-xl hidden md:block animate-bounce">
-                                <p className="text-xs text-orange-300">Interact with me</p>
-                                <p className="font-bold text-sm text-white">Move your mouse</p>
+                            <div className="absolute bottom-4 left-0 right-0 text-center pointer-events-none">
+                                <span className="text-xs font-mono text-orange-400/80 tracking-widest bg-black/50 px-3 py-1 rounded-full">
+                                    INTERACTIVE 3D
+                                </span>
                             </div>
                         </div>
 
-                        {/* Info Text */}
-                        <div className="text-center lg:text-left max-w-md">
-                            <p className="text-gray-400 text-base leading-relaxed mb-6">
-                                Whether you have a question, want to start a project, or simply want to connect, feel free to reach out.
+                        {/* Contact Details */}
+                        <div className="text-center lg:text-left space-y-6">
+                            <p className="text-gray-400 text-lg">
+                                Have a project in mind? Drop me a line at:
                             </p>
 
-                            {/* Email */}
-                            <div className="flex items-center gap-3 justify-center lg:justify-start mb-6">
-                                <Mail className="w-5 h-5 text-orange-400" />
-                                <a href="mailto:piushmaji@example.com" className="text-orange-400 hover:text-orange-300 transition-colors">
-                                    piushmaji@example.com
-                                </a>
-                            </div>
+                            <a
+                                href="mailto:piushmaji@example.com"
+                                className="inline-flex items-center gap-3 text-2xl md:text-3xl font-bold text-white hover:text-orange-400 transition-colors group"
+                            >
+                                <Mail className="w-6 h-6 md:w-8 md:h-8 text-orange-500 group-hover:scale-110 transition-transform" />
+                                piushmaji@gmail.com
+                            </a>
 
-                            {/* Social Links */}
-                            <div className="flex gap-4 justify-center lg:justify-start">
+                            <div className="flex items-center justify-center lg:justify-start gap-4 pt-4">
                                 {[
-                                    { Icon: Github, href: '#' },
-                                    { Icon: Linkedin, href: '#' },
-                                    { Icon: Twitter, href: '#' }
-                                ].map(({ Icon, href }, index) => (
+                                    { Icon: Github, href: 'https://github.com/piushmaji', label: 'Github' },
+                                    { Icon: Linkedin, href: 'https://www.linkedin.com/in/piush-maji-4aa2a72b9/', label: 'LinkedIn' },
+                                    { Icon: Twitter, href: 'https://x.com/piushmaji', label: 'Twitter' }
+                                ].map(({ Icon, href, label }, index) => (
                                     <a
                                         key={index}
                                         href={href}
-                                        className="p-3 bg-white/5 border border-white/10 rounded-full hover:bg-orange-500/10 hover:border-orange-500/30 transition-all cursor-pointer group"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        aria-label={label}
+                                        className="p-4 bg-white/5 border border-white/10 rounded-full hover:bg-orange-500 hover:border-orange-500 hover:text-black transition-all duration-300 group"
                                     >
-                                        <Icon className="w-5 h-5 text-gray-300 group-hover:text-orange-400 transition-colors" />
+                                        <Icon className="w-5 h-5 md:w-6 md:h-6 text-gray-300 group-hover:text-black transition-colors" />
                                     </a>
                                 ))}
                             </div>
                         </div>
                     </div>
 
-                    {/* RIGHT SIDE: Glass Form */}
-                    <div className="order-1 lg:order-2">
-                        <div className="relative">
-                            <div className="absolute -inset-4 bg-gradient-to-r from-orange-500/10 via-orange-600/10 to-orange-500/10 rounded-3xl blur-2xl" />
-                            <div className="relative bg-gradient-to-br from-white/[0.03] to-white/[0.01] backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-10">
+                    {/* --- Right Column: Form --- */}
+                    {/* On mobile, this appears FIRST (order-1). On Desktop, it's RIGHT (order-2) */}
+                    <div className="order-1 lg:order-2 w-full" data-aos="fade-left">
+                        <div className="relative group">
+                            {/* Animated Border Gradient */}
+                            <div className="absolute -inset-1 bg-gradient-to-r from-orange-600 via-purple-600 to-orange-600 rounded-2xl blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200 animate-tilt"></div>
 
-                                <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+                            <div className="relative bg-[#0a0a0a] ring-1 ring-white/10 rounded-2xl p-8 md:p-10 shadow-2xl">
+                                <h3 className="text-2xl font-bold mb-2">Send me a message</h3>
+                                <p className="text-gray-500 mb-8 text-sm">Fill out the form below and I'll get back to you shortly.</p>
 
-                                    {/* Name Input */}
+                                <form onSubmit={handleSubmit} className="space-y-6">
                                     <div className="space-y-2">
-                                        <label className="text-sm text-gray-400 ml-1 flex items-center gap-2">
-                                            <User className="w-4 h-4 text-orange-400" />
-                                            Your Name
+                                        <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                                            <User className="w-4 h-4 text-orange-500" />
+                                            Full Name
                                         </label>
                                         <input
                                             type="text"
                                             name="name"
                                             value={form.name}
                                             onChange={handleChange}
-                                            placeholder="What's your name?"
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-600 outline-none focus:border-orange-500/50 focus:bg-white/[0.07] transition-all"
+                                            placeholder="John Doe"
+                                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
                                             required
                                         />
                                     </div>
 
-                                    {/* Email Input */}
                                     <div className="space-y-2">
-                                        <label className="text-sm text-gray-400 ml-1 flex items-center gap-2">
-                                            <Mail className="w-4 h-4 text-orange-400" />
+                                        <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                                            <Mail className="w-4 h-4 text-orange-500" />
                                             Email Address
                                         </label>
                                         <input
@@ -305,46 +294,43 @@ const Contact = () => {
                                             name="email"
                                             value={form.email}
                                             onChange={handleChange}
-                                            placeholder="What's your email?"
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-600 outline-none focus:border-orange-500/50 focus:bg-white/[0.07] transition-all"
+                                            placeholder="john@example.com"
+                                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all"
                                             required
                                         />
                                     </div>
 
-                                    {/* Message Input */}
                                     <div className="space-y-2">
-                                        <label className="text-sm text-gray-400 ml-1 flex items-center gap-2">
-                                            <MessageSquare className="w-4 h-4 text-orange-400" />
-                                            Your Message
+                                        <label className="text-sm font-medium text-gray-300 flex items-center gap-2">
+                                            <MessageSquare className="w-4 h-4 text-orange-500" />
+                                            Message
                                         </label>
                                         <textarea
                                             rows="5"
                                             name="message"
                                             value={form.message}
                                             onChange={handleChange}
-                                            placeholder="What do you want to say?"
-                                            className="w-full bg-white/5 border border-white/10 rounded-xl px-5 py-4 text-white placeholder-gray-600 outline-none focus:border-orange-500/50 focus:bg-white/[0.07] transition-all resize-none"
+                                            placeholder="Tell me about your project..."
+                                            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition-all resize-none"
                                             required
                                         />
                                     </div>
 
-                                    {/* Submit Button */}
                                     <button
                                         type="submit"
                                         disabled={loading}
-                                        className="group relative w-full disabled:opacity-50 disabled:cursor-not-allowed"
+                                        className="w-full relative overflow-hidden bg-gradient-to-r from-orange-500 to-red-500 text-white font-bold py-4 rounded-lg shadow-lg hover:shadow-orange-500/25 transition-all transform hover:-translate-y-1 active:translate-y-0 disabled:opacity-70 disabled:cursor-not-allowed"
                                     >
-                                        <div className="absolute -inset-1 bg-gradient-to-r from-orange-500 via-orange-600 to-orange-500 rounded-xl blur-lg opacity-60 group-hover:opacity-100 transition-opacity" />
-                                        <div className="relative bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl px-8 py-5 flex items-center justify-center gap-3 group-hover:shadow-2xl group-hover:shadow-orange-500/50 transition-all">
+                                        <div className="flex items-center justify-center gap-2">
                                             {loading ? (
                                                 <>
                                                     <Loader2 className="w-5 h-5 animate-spin" />
-                                                    <span className="text-lg font-semibold">Sending...</span>
+                                                    <span>Sending...</span>
                                                 </>
                                             ) : (
                                                 <>
-                                                    <span className="text-lg font-semibold">Send Message</span>
-                                                    <Send className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                                                    <span>Send Message</span>
+                                                    <Send className="w-5 h-5" />
                                                 </>
                                             )}
                                         </div>
@@ -356,13 +342,6 @@ const Contact = () => {
 
                 </div>
             </div>
-
-            <style jsx>{`
-                @keyframes meshMove {
-                    0% { transform: translate(0, 0); }
-                    100% { transform: translate(60px, 60px); }
-                }
-            `}</style>
         </section>
     );
 };

@@ -100,9 +100,9 @@ export default function Footer() {
                         <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-6">Connect</h4>
                         <div className="grid grid-cols-3 gap-4">
                             {[
-                                { Icon: Github, label: "Github", href: "#" },
-                                { Icon: Linkedin, label: "LinkedIn", href: "#" },
-                                { Icon: Instagram, label: "Instagram", href: "#" }
+                                { Icon: Github, label: "Github", href: "https://github.com/piushmaji" },
+                                { Icon: Linkedin, label: "LinkedIn", href: "https://www.linkedin.com/in/piush-maji-4aa2a72b9/" },
+                                { Icon: Instagram, label: "Instagram", href: "https://www.instagram.com/piushhmaji/" }
                             ].map(({ Icon, label, href }, index) => (
                                 <a
                                     key={index}
