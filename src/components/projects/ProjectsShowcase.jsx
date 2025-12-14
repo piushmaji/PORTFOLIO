@@ -36,7 +36,7 @@ const ProjectsShowcase = () => {
             description: 'A pixel-perfect Apple inspired website clone with smooth animations, parallax sections, product showcases, and modern UI transitions.',
             image: 'https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=1200&h=800&fit=crop',
             tags: ['React', 'Tailwind', 'GSAP', 'Framer Motion'],
-            github: '#',
+            github: 'https://github.com/piushmaji/AppleCloneWebsite',
             live: '#',
             gradient: 'from-gray-300 to-gray-500',
             color: 'gray'
@@ -47,7 +47,7 @@ const ProjectsShowcase = () => {
             description: 'A fully animated, portfolio-style creative website inspired by “Miranda”. Smooth text transitions, scroll animations, and interactive UI elements.',
             image: 'https://images.unsplash.com/photo-1506765515384-028b60a970df?w=1200&h=800&fit=crop',
             tags: ['HTML', 'CSS', 'GSAP', 'Locomotive Scroll'],
-            github: '#',
+            github: 'https://github.com/piushmaji/Miranda',
             live: '#',
             gradient: 'from-purple-500 to-pink-500',
             color: 'purple'
