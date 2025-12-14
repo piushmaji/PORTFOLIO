@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Code, Palette, Zap, Database, Globe, Terminal } from 'lucide-react';
 
 const About = () => {
-    const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-    const [isVisible, setIsVisible] = useState(false);
+    // FIX: Removed state for mouse position to prevent re-renders
     const sectionRef = useRef(null);
+    const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
         const observer = new IntersectionObserver(
@@ -27,12 +27,15 @@ const About = () => {
         };
     }, []);
 
+    // FIX: Direct DOM manipulation for performance
     const handleMouseMove = (e) => {
-        const rect = e.currentTarget.getBoundingClientRect();
-        setMousePosition({
-            x: ((e.clientX - rect.left) / rect.width) * 100,
-            y: ((e.clientY - rect.top) / rect.height) * 100
-        });
+        if (!sectionRef.current) return;
+        const rect = sectionRef.current.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+        sectionRef.current.style.setProperty('--mouse-x', `${x}%`);
+        sectionRef.current.style.setProperty('--mouse-y', `${y}%`);
     };
 
     const skills = [
@@ -48,17 +51,18 @@ const About = () => {
         <section
             id='about'
             ref={sectionRef}
-            className="min-h-screen bg-black text-white relative overflow-hidden flex items-center scroll-mt-16"
+            className="min-h-screen bg-black text-whiteZS relative overflow-hidden flex items-center scroll-mt-16"
             onMouseMove={handleMouseMove}
         >
-            {/* Gradient Background */}
+            {/* Gradient Background - Uses CSS Variables now */}
             <div
-                className="absolute inset-0 opacity-20"
+                className="absolute inset-0 opacity-20 pointer-events-none"
                 style={{
-                    background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(255, 140, 0, 0.15), transparent 50%)`
+                    background: `radial-gradient(circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(255, 140, 0, 0.15), transparent 50%)`
                 }}
             />
 
+            {/* ... Rest of the component stays exactly the same ... */}
             <div className="container mx-auto px-6 lg:px-12 py-20 relative z-10">
                 <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
 
@@ -205,7 +209,6 @@ const About = () => {
           }
         }
       `}</style>
-
         </section>
     );
 };

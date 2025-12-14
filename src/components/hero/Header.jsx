@@ -1,24 +1,40 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
+// Extract navigation items as constants
+const NAV_ITEMS = ['About', 'Skills', 'Projects', 'Testimonial', 'Contact'];
+
 const Header = () => {
-    // State for the menu (Open/Closed)
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-    // Toggle function
     const toggleMobileMenu = () => {
         setIsMenuOpen(!isMenuOpen);
     };
 
-    // Close function (for when links are clicked)
     const closeMenu = () => {
         setIsMenuOpen(false);
     };
 
-    return (
-        <header className="flex justify-between items-center py-4 px-4 lg:px-20 sticky top-0 z-50 bg-black/40 backdrop-blur-xl shadow-lg shadow-black/50">
+    useEffect(() => {
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') closeMenu();
+        };
 
-            {/* Logo - High Z-index to stay visible over the menu */}
+        if (isMenuOpen) {
+            document.addEventListener('keydown', handleEscape);
+            document.body.style.overflow = 'hidden';
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleEscape);
+            document.body.style.overflow = 'unset';
+        };
+    }, [isMenuOpen]);
+
+    return (
+        <header className="flex justify-between items-center py-4 px-4 lg:px-20 sticky top-0 z-50 bg-black backdrop-blur-xl shadow-lg shadow-black/50">
+
+            {/* Logo - Fixed z-index */}
             <a
                 data-aos="fade-down"
                 data-aos-easing="linear"
@@ -29,14 +45,14 @@ const Header = () => {
                 PORTFOLIO
             </a>
 
-            {/* --- Desktop Navigation --- */}
+            {/* Desktop Navigation - Now consistent with mobile */}
             <nav className="hidden md:flex items-center gap-12">
-                {['About', 'Skills', 'Projects', 'Testimonial', 'Contact'].map((item, index) => (
+                {NAV_ITEMS.map((item, index) => (
                     <a
                         key={item}
                         data-aos="fade-down"
                         data-aos-easing="linear"
-                        data-aos-duration={1000 + (index * 500)} // Staggered animation
+                        data-aos-duration={1000 + (index * 500)}
                         className="text-base tracking-wider transition-colors hover:text-orange-400 text-white"
                         href={`#${item.toLowerCase()}`}
                     >
@@ -45,25 +61,22 @@ const Header = () => {
                 ))}
             </nav>
 
-            {/* --- Mobile Menu Button --- */}
-            {/* z-[100] ensures it sits ON TOP of the z-[90] full-screen menu */}
+            {/* Mobile Menu Button */}
             <button
                 onClick={toggleMobileMenu}
                 className='md:hidden text-white text-3xl p-2 z-[100] relative transition-transform duration-300 hover:scale-110 active:scale-90'
                 aria-label="Toggle Menu"
             >
-                {/* Switches icon based on state */}
                 {isMenuOpen ? <X size={32} /> : <Menu size={32} />}
             </button>
 
-            {/* --- Full Screen Mobile Menu Overlay --- */}
+            {/* Full Screen Mobile Menu Overlay */}
             <div
                 className={`fixed inset-0 w-screen h-screen z-[90] bg-black/95 backdrop-blur-2xl flex flex-col justify-center items-center transition-all duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${isMenuOpen ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
                     }`}
             >
-                {/* Menu Links */}
                 <nav className="flex flex-col gap-8 w-full items-center">
-                    {['Home', 'About', 'Skills', 'Projects', 'Testimonial', 'Contact'].map((item, index) => (
+                    {NAV_ITEMS.map((item, index) => (
                         <a
                             key={item}
                             href={`#${item.toLowerCase()}`}
@@ -76,9 +89,8 @@ const Header = () => {
                     ))}
                 </nav>
             </div>
-
         </header>
-    )
-}
+    );
+};
 
 export default Header;

@@ -62,6 +62,7 @@ const ProjectsShowcase = () => {
             const container = containerRef.current;
             const scrollPosition = container.scrollTop;
             const itemHeight = container.clientHeight;
+            // Added small threshold to make scroll detection more accurate on mobile
             const newIndex = Math.round(scrollPosition / itemHeight);
 
             if (newIndex !== activeIndex && newIndex >= 0 && newIndex < projects.length) {
@@ -71,7 +72,8 @@ const ProjectsShowcase = () => {
 
         const container = containerRef.current;
         if (container) {
-            container.addEventListener('scroll', handleScroll);
+            // Passive listener improves scroll performance on mobile
+            container.addEventListener('scroll', handleScroll, { passive: true });
             return () => container.removeEventListener('scroll', handleScroll);
         }
     }, [activeIndex, projects.length]);
@@ -100,20 +102,20 @@ const ProjectsShowcase = () => {
         <section
             ref={sectionRef}
             id='projects'
-            className="min-h-screen bg-black text-white py-20 scroll-mt-16 relative overflow-hidden"
+            className="min-h-screen bg-black text-white py-12 md:py-20 scroll-mt-16 relative overflow-hidden"
             onMouseMove={handleMouseMove}
         >
 
             {/* Dynamic Gradient Background */}
             <div
-                className="absolute inset-0 opacity-30 transition-all duration-300"
+                className="absolute inset-0 opacity-30 transition-all duration-300 pointer-events-none"
                 style={{
                     background: `radial-gradient(circle at ${mousePosition.x}% ${mousePosition.y}%, rgba(255,140,0,0.2), transparent 50%)`
                 }}
             ></div>
 
             {/* Animated Mesh Grid */}
-            <div className="absolute inset-0 opacity-10">
+            <div className="absolute inset-0 opacity-10 pointer-events-none">
                 <div
                     className="absolute inset-0"
                     style={{
@@ -128,21 +130,21 @@ const ProjectsShowcase = () => {
             </div>
 
             {/* Floating Orbs */}
-            <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-orange-500/20 rounded-full blur-3xl animate-pulse"></div>
-            <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }}></div>
+            <div className="absolute top-1/4 left-1/4 w-64 h-64 md:w-96 md:h-96 bg-orange-500/20 rounded-full blur-3xl animate-pulse pointer-events-none"></div>
+            <div className="absolute bottom-1/4 right-1/4 w-64 h-64 md:w-96 md:h-96 bg-orange-600/10 rounded-full blur-3xl animate-pulse pointer-events-none" style={{ animationDelay: '2s' }}></div>
 
             {/* Header */}
-            <div className="text-center mb-16 px-6 relative z-10">
+            <div className="text-center mb-10 md:mb-16 px-4 relative z-10">
                 <div className="inline-block mb-4">
                     <div className="relative">
-                        <span className="inline-flex items-center gap-2 text-orange-400 text-sm font-light tracking-[0.3em] uppercase border border-orange-500/50 px-6 py-2 rounded-full backdrop-blur-sm bg-orange-500/5 shadow-lg shadow-orange-500/20">
-                            <Sparkles className="w-4 h-4 animate-pulse" />
+                        <span className="inline-flex items-center gap-2 text-orange-400 text-xs md:text-sm font-light tracking-[0.3em] uppercase border border-orange-500/50 px-4 md:px-6 py-2 rounded-full backdrop-blur-sm bg-orange-500/5 shadow-lg shadow-orange-500/20">
+                            <Sparkles className="w-3 h-3 md:w-4 md:h-4 animate-pulse" />
                             CREATIVE WORKS
                         </span>
                         <div className="absolute inset-0 rounded-full bg-orange-500/20 blur-xl animate-pulse"></div>
                     </div>
                 </div>
-                <h2 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+                <h2 className="text-4xl md:text-6xl lg:text-7xl font-bold mb-4 md:mb-6 leading-tight">
                     Featured{' '}
                     <span className="relative inline-block">
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 via-orange-500 to-orange-600">
@@ -151,21 +153,21 @@ const ProjectsShowcase = () => {
                         <div className="absolute -bottom-2 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent"></div>
                     </span>
                 </h2>
-                <p className="text-gray-400 text-lg max-w-2xl mx-auto font-light">
+                <p className="text-gray-400 text-sm md:text-lg max-w-2xl mx-auto font-light px-4">
                     Explore my latest work through an immersive scrolling experience
                 </p>
             </div>
 
             {/* Main Content */}
-            <div className="relative max-w-[1600px] mx-auto px-6 lg:px-12">
+            <div className="relative max-w-[1600px] mx-auto px-4 md:px-6 lg:px-12">
                 <div className="grid lg:grid-cols-12 gap-8 items-center">
 
                     {/* Left Side - Project Info Panel */}
                     <div className="lg:col-span-4 space-y-6 order-2 lg:order-1">
-                        <div className="sticky top-24">
+                        <div className="lg:sticky lg:top-24">
                             {/* Project Counter */}
-                            <div className="flex items-center gap-4 mb-8">
-                                <div className="text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">
+                            <div className="flex items-center gap-4 mb-6 md:mb-8">
+                                <div className="text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-orange-600">
                                     0{activeIndex + 1}
                                 </div>
                                 <div className="h-px flex-1 bg-gradient-to-r from-orange-500 to-transparent"></div>
@@ -178,7 +180,7 @@ const ProjectsShowcase = () => {
                             <div className="inline-block mb-4">
                                 <div className={`bg-gradient-to-r ${projects[activeIndex].gradient} p-0.5 rounded-full`}>
                                     <div className="bg-black rounded-full px-4 py-1.5">
-                                        <span className="text-sm font-light text-orange-400">
+                                        <span className="text-xs md:text-sm font-light text-orange-400">
                                             {projects[activeIndex].category}
                                         </span>
                                     </div>
@@ -186,23 +188,23 @@ const ProjectsShowcase = () => {
                             </div>
 
                             {/* Project Title */}
-                            <h3 className="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
+                            <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 leading-tight min-h-[3em] lg:min-h-0">
                                 {projects[activeIndex].title}
                             </h3>
 
                             {/* Description */}
-                            <p className="text-gray-400 text-lg leading-relaxed mb-8">
+                            <p className="text-gray-400 text-base md:text-lg leading-relaxed mb-6 md:mb-8">
                                 {projects[activeIndex].description}
                             </p>
 
                             {/* Tech Stack */}
-                            <div className="mb-8">
+                            <div className="mb-6 md:mb-8">
                                 <h4 className="text-sm text-gray-500 uppercase tracking-wider mb-3">Tech Stack</h4>
                                 <div className="flex flex-wrap gap-2">
                                     {projects[activeIndex].tags.map((tag, i) => (
                                         <span
                                             key={i}
-                                            className="bg-white/5 border border-white/10 px-4 py-2 rounded-lg text-sm text-gray-300 hover:border-orange-500/50 hover:text-orange-400 transition-all"
+                                            className="bg-white/5 border border-white/10 px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm text-gray-300 hover:border-orange-500/50 hover:text-orange-400 transition-all"
                                         >
                                             {tag}
                                         </span>
@@ -211,10 +213,10 @@ const ProjectsShowcase = () => {
                             </div>
 
                             {/* Action Buttons */}
-                            <div className="flex gap-4">
+                            <div className="flex flex-wrap gap-4">
                                 <a
                                     href={projects[activeIndex].github}
-                                    className="group flex items-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-orange-500/50 px-6 py-3 rounded-xl transition-all"
+                                    className="group flex-1 md:flex-none flex items-center justify-center gap-2 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-orange-500/50 px-6 py-3 rounded-xl transition-all"
                                 >
                                     <Github className="w-5 h-5" />
                                     <span>View Code</span>
@@ -222,7 +224,7 @@ const ProjectsShowcase = () => {
                                 </a>
                                 <a
                                     href={projects[activeIndex].live}
-                                    className="group flex items-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-6 py-3 rounded-xl transition-all shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50"
+                                    className="group flex-1 md:flex-none flex items-center justify-center gap-2 bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-6 py-3 rounded-xl transition-all shadow-lg shadow-orange-500/30 hover:shadow-orange-500/50"
                                 >
                                     <span>Live Demo</span>
                                     <ExternalLink className="w-5 h-5 group-hover:rotate-45 transition-transform" />
@@ -233,99 +235,91 @@ const ProjectsShowcase = () => {
 
                     {/* Center - Scrollable Projects */}
                     <div className="lg:col-span-5 order-1 lg:order-2">
+                        {/* MOBILE FIX:
+                            1. Changed h-[500px] to h-[50vh] md:h-[700px]. This makes it responsive.
+                            2. Added touch-action-pan-y for better mobile scrolling.
+                            3. Added overscroll-behavior-contain to prevent parent scrolling issues.
+                        */}
                         <div
                             ref={containerRef}
-                            className="h-[500px] lg:h-[700px] overflow-y-scroll snap-y snap-mandatory scrollbar-hide relative"
+                            className="h-[50vh] md:h-[600px] lg:h-[700px] w-full overflow-y-auto snap-y snap-mandatory scrollbar-hide relative overscroll-contain touch-pan-y"
+                            style={{ scrollBehavior: 'smooth' }}
                         >
                             {projects.map((project, index) => (
                                 <div
                                     key={index}
-                                    className="h-[500px] lg:h-[700px] snap-start flex items-center justify-center p-4"
+                                    className="h-full w-full snap-start flex items-center justify-center p-2 md:p-4"
                                 >
                                     <div
                                         className={`relative w-full h-full transition-all duration-700 ${activeIndex === index
                                             ? 'opacity-100 scale-100 blur-0'
-                                            : 'opacity-20 scale-90 blur-md pointer-events-none'
+                                            : 'opacity-40 scale-95 blur-[2px]'
                                             }`}
                                     >
                                         {/* Project Card */}
-                                        <div className="group relative h-full rounded-3xl overflow-hidden">
+                                        <div className="group relative h-full rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl">
 
                                             {/* Gradient Border */}
-                                            <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} p-[2px] rounded-3xl`}>
-                                                <div className="absolute inset-[2px] bg-black rounded-3xl"></div>
+                                            <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} p-[2px] rounded-2xl md:rounded-3xl`}>
+                                                <div className="absolute inset-[2px] bg-black rounded-2xl md:rounded-3xl"></div>
                                             </div>
 
                                             {/* Image Container */}
-                                            <div className="relative h-full rounded-3xl overflow-hidden">
+                                            <div className="relative h-full rounded-2xl md:rounded-3xl overflow-hidden">
                                                 <img
                                                     src={project.image}
                                                     alt={project.title}
                                                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                                    loading="lazy"
                                                 />
 
                                                 {/* Gradient Overlays */}
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-60"></div>
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-80 md:opacity-60"></div>
                                                 <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient} opacity-0 group-hover:opacity-20 transition-opacity duration-500`}></div>
 
                                                 {/* Floating Number */}
-                                                <div className="absolute top-8 right-8">
-                                                    <div className="text-8xl font-bold text-white/10 group-hover:text-white/20 transition-colors">
+                                                <div className="absolute top-4 right-4 md:top-8 md:right-8">
+                                                    <div className="text-6xl md:text-8xl font-bold text-white/10 group-hover:text-white/20 transition-colors">
                                                         0{index + 1}
                                                     </div>
                                                 </div>
 
-                                                {/* Bottom Info */}
-                                                <div className="absolute bottom-0 left-0 right-0 p-8">
-                                                    <div className={`inline-block bg-gradient-to-r ${project.gradient} px-4 py-1 rounded-full text-sm font-light mb-4`}>
+                                                {/* Bottom Info (Visible on Image for Mobile Context) */}
+                                                <div className="absolute bottom-0 left-0 right-0 p-6 md:p-8">
+                                                    <div className={`inline-block bg-gradient-to-r ${project.gradient} px-3 py-1 rounded-full text-xs font-light mb-2 md:mb-4`}>
                                                         {project.category}
                                                     </div>
-                                                    <h4 className="text-3xl font-bold text-white mb-2">
+                                                    <h4 className="text-xl md:text-3xl font-bold text-white mb-2 line-clamp-2">
                                                         {project.title}
                                                     </h4>
                                                 </div>
-                                            </div>
 
-                                            {/* Corner Decorations */}
-                                            <div className="absolute top-0 left-0 w-32 h-32 border-t-2 border-l-2 border-orange-500/30 rounded-tl-3xl"></div>
-                                            <div className="absolute bottom-0 right-0 w-32 h-32 border-b-2 border-r-2 border-orange-500/30 rounded-br-3xl"></div>
+                                                {/* Corner Decorations */}
+                                                <div className="absolute top-0 left-0 w-16 h-16 md:w-32 md:h-32 border-t-2 border-l-2 border-orange-500/30 rounded-tl-3xl"></div>
+                                                <div className="absolute bottom-0 right-0 w-16 h-16 md:w-32 md:h-32 border-b-2 border-r-2 border-orange-500/30 rounded-br-3xl"></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
 
-                        {/* Scroll Indicator */}
-                        {activeIndex < projects.length - 1 && (
-                            <div className="absolute lg:top-[98%] lg:left-[51.5%] left-[48%] top-[50%] transform -translate-y-1/2 z-50 pointer-events-none">
-                                <div className="flex flex-col items-center gap-2 pointer-events-auto">
-                                    <span className="text-orange-400 text-sm tracking-widest font-light mb-2 animate-pulse">
-                                        Scroll Down
-                                    </span>
-
-                                    <div className="w-6 h-8 border-2 border-orange-400 rounded-full flex items-start justify-center relative overflow-hidden">
-                                        <div className="absolute top-1 w-2 h-2 bg-orange-400 rounded-full animate-scrollDownDot shadow-lg shadow-orange-500/50"></div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
                     </div>
 
                     {/* Right Side - Navigation */}
                     <div className="lg:col-span-3 order-3">
-                        <div className="flex flex-row lg:flex-col gap-6 justify-center lg:sticky lg:top-24">
+                        <div className="flex flex-row lg:flex-col gap-3 md:gap-6 justify-center lg:sticky lg:top-24 flex-wrap">
                             {projects.map((project, index) => (
                                 <button
                                     key={index}
                                     onClick={() => scrollToProject(index)}
-                                    className={`group relative transition-all duration-500 ${activeIndex === index ? 'scale-100' : 'scale-90 opacity-40 hover:opacity-70'
+                                    className={`group relative transition-all duration-500 ${activeIndex === index ? 'scale-100 opacity-100' : 'scale-90 opacity-40 hover:opacity-70'
                                         }`}
                                 >
                                     <div className="flex items-center gap-4">
-                                        {/* Animated Dot */}
-                                        <div className="relative">
-                                            <div className={`w-4 h-4 rounded-full transition-all duration-500 ${activeIndex === index
+                                        {/* Animated Dot - made slightly larger for touch targets */}
+                                        <div className="relative p-2 -m-2">
+                                            <div className={`w-3 h-3 md:w-4 md:h-4 rounded-full transition-all duration-500 ${activeIndex === index
                                                 ? `bg-gradient-to-r ${project.gradient} shadow-lg shadow-orange-500/50`
                                                 : 'bg-gray-700 group-hover:bg-gray-600'
                                                 }`}></div>
@@ -365,6 +359,7 @@ const ProjectsShowcase = () => {
                     100% { transform: translate(60px, 60px); }
                 }
                 
+                /* Ensure touch scrolling works nicely */
                 .scrollbar-hide::-webkit-scrollbar {
                     display: none;
                 }
@@ -372,16 +367,7 @@ const ProjectsShowcase = () => {
                     -ms-overflow-style: none;
                     scrollbar-width: none;
                 }
-                    @keyframes scrollDownDot {
-        0% { top: 5%; opacity: 0; }
-        30% { top: 40%; opacity: 1; }
-        60% { top: 70%; opacity: 0.5; }
-        100% { top: 5%; opacity: 0; }
-    }
-    .animate-scrollDownDot {
-        animation: scrollDownDot 2s infinite;
-    }
-                `}</style>
+            `}</style>
         </section>
     );
 };

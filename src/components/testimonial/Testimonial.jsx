@@ -44,150 +44,163 @@ export default function TestimonialSection() {
     const [isMobile, setIsMobile] = useState(false);
     const [isPaused, setIsPaused] = useState(false);
 
-    // Detect Screen Size
+    // Detect screen size
     useEffect(() => {
         const handleResize = () => {
             setIsMobile(window.innerWidth < 768);
         };
-
-        // Initial check
         handleResize();
-
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
     }, []);
 
-    // Auto Scroll Timer
+    // Auto-scroll (DESKTOP ONLY)
     useEffect(() => {
-        if (isPaused) return;
+        if (isPaused || isMobile) return;
 
         const timer = setInterval(() => {
             setIndex((prev) => (prev + 1) % testimonials.length);
         }, 3000);
 
         return () => clearInterval(timer);
-    }, [testimonials.length, isPaused]);
+    }, [isPaused, isMobile, testimonials.length]);
 
-    // Dynamic Transform Logic
-    const getTransformStyle = () => {
-        if (isMobile) {
-            // Mobile: Slide 100% per card
-            return `translateX(-${index * 100}%)`;
-        }
-        // Desktop: Slide 33.33% per card but offset by 33.33% to center the active one
-        return `translateX(calc(-${index * 33.33}% + 33.33%))`;
-    };
+    const active = testimonials[index];
 
     return (
-        <section id="testimonial" className="w-full bg-black text-white py-16 md:py-24 px-4 overflow-hidden relative">
-
-            {/* Background Gradients for smooth fade effect on edges (Desktop only) */}
-            <div className="hidden md:block absolute top-0 left-0 w-32 h-full bg-gradient-to-r from-black to-transparent z-10 pointer-events-none"></div>
-            <div className="hidden md:block absolute top-0 right-0 w-32 h-full bg-gradient-to-l from-black to-transparent z-10 pointer-events-none"></div>
-
-            <div className="max-w-7xl mx-auto text-center mb-12 md:mb-16">
+        <section
+            id="testimonial"
+            className="w-full bg-black text-white py-16 md:py-24 px-4 relative"
+        >
+            {/* Heading */}
+            <div className="max-w-7xl mx-auto text-center mb-12">
                 <h2 className="text-3xl md:text-5xl font-bold mb-4">
                     Testimonials
                 </h2>
-                <div className="w-20 h-1 bg-orange-500 mx-auto rounded-full mb-4"></div>
-                <p className="text-gray-400 text-sm md:text-lg">
+                <div className="w-20 h-1 bg-orange-500 mx-auto rounded-full mb-4" />
+                <p className="text-gray-400">
                     What people are saying about my work
                 </p>
             </div>
 
-            {/* VIEWPORT */}
-            <div
-                className="relative w-full max-w-7xl mx-auto"
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-                onTouchStart={() => setIsPaused(true)}
-                onTouchEnd={() => setIsPaused(false)}
-            >
+            {/* ================= MOBILE ================= */}
 
-                {/* TRACK */}
+            {isMobile && (
+                <div className="w-full px-4">
+                    <div className="relative">
+                        {/* Active card */}
+                        <TestimonialCard data={active} mobile />
+
+                        {/* Navigation dots */}
+                        <div className="flex justify-center gap-2 mt-4">
+                            {testimonials.map((_, i) => (
+                                <button
+                                    key={i}
+                                    onClick={() => setIndex(i)}
+                                    className={`transition-all rounded-full ${i === index ? "w-8 h-2 bg-orange-500" : "w-2 h-2 bg-gray-600"
+                                        }`}
+                                />
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
+            {/* ================= DESKTOP ================= */}
+            {!isMobile && (
                 <div
-                    className="flex transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
-                    style={{
-                        transform: getTransformStyle(),
-                    }}
+                    className="relative w-full max-w-7xl mx-auto overflow-hidden"
+                    onMouseEnter={() => setIsPaused(true)}
+                    onMouseLeave={() => setIsPaused(false)}
                 >
-                    {testimonials.map((t, i) => {
-                        const isCenter = i === index;
+                    <div
+                        className="flex transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
+                        style={{
+                            transform: `translateX(calc(-${index * 33.33}% + 33.33%))`,
+                        }}
+                    >
+                        {testimonials.map((t, i) => {
+                            const isCenter = i === index;
 
-                        // Mobile: Always Opacity 1
-                        // Desktop: Opacity 1 only if center, else faded
-                        const opacityClass = isMobile ? "opacity-100 scale-100 blur-0" : (isCenter ? "opacity-100 scale-100 blur-0" : "opacity-40 scale-90 blur-sm");
-
-                        const borderClass = isMobile || isCenter ? "border-orange-500/50 bg-white/10" : "border-white/10 bg-white/5";
-
-                        return (
-                            <div
-                                key={i}
-                                className="min-w-full md:min-w-[33.33%] px-4 md:px-6 flex justify-center items-center transition-all duration-500"
-                            >
+                            return (
                                 <div
-                                    className={`
-                                        relative p-8 rounded-3xl border backdrop-blur-xl w-full max-w-md
-                                        flex flex-col gap-6
-                                        transition-all duration-500 shadow-2xl
-                                        ${opacityClass} ${borderClass}
-                                    `}
+                                    key={i}
+                                    className="min-w-[33.33%] px-6 flex justify-center"
                                 >
-                                    {/* Quote Icon */}
-                                    <Quote className="absolute top-6 right-8 text-white/10 rotate-180" size={48} />
-
-                                    {/* Profile */}
-                                    <div className="flex items-center gap-4">
-                                        <div className="relative">
-                                            <div className="w-16 h-16 rounded-full p-1 border border-white/20">
-                                                <img
-                                                    src={t.img}
-                                                    alt={t.name}
-                                                    className="w-full h-full rounded-full object-cover"
-                                                />
-                                            </div>
-                                            <div className="absolute bottom-0 right-0 w-4 h-4 bg-green-500 rounded-full border-2 border-black"></div>
-                                        </div>
-                                        <div className="text-left">
-                                            <h3 className="text-lg font-bold text-white">{t.name}</h3>
-                                            <p className="text-orange-400 text-xs font-semibold uppercase tracking-wider">{t.role}</p>
-                                        </div>
-                                    </div>
-
-                                    {/* Stars */}
-                                    <div className="flex gap-1">
-                                        {Array.from({ length: 5 }).map((_, s) => (
-                                            <Star
-                                                key={s}
-                                                size={18}
-                                                className={s < t.stars ? "fill-orange-500 text-orange-500" : "fill-gray-800 text-gray-800"}
-                                            />
-                                        ))}
-                                    </div>
-
-                                    {/* Feedback */}
-                                    <p className="text-gray-300 leading-relaxed text-base md:text-lg italic text-left">
-                                        "{t.feedback}"
-                                    </p>
+                                    <TestimonialCard
+                                        data={t}
+                                        active={isCenter}
+                                    />
                                 </div>
-                            </div>
-                        );
-                    })}
+                            );
+                        })}
+                    </div>
+                </div>
+            )}
+        </section>
+    );
+}
+
+/* ================= CARD ================= */
+
+function TestimonialCard({ data, active, mobile }) {
+    return (
+        <div
+            className={`
+            relative w-full ${mobile ? "max-w-full" : "max-w-md"} 
+            ${mobile ? "p-4 gap-3 rounded-2xl" : "p-8 gap-6 rounded-3xl"}
+            border backdrop-blur-xl shadow-2xl flex flex-col transition-all duration-500
+            ${mobile
+                    ? "border-orange-500/50 bg-white/10 animate-mobileFade"
+                    : active
+                        ? "opacity-100 scale-100 border-orange-500/50 bg-white/10"
+                        : "opacity-40 scale-90 blur-sm border-white/10 bg-white/5"
+                }
+            `}
+        >
+            {/* Quote icon */}
+            <Quote
+                className={`absolute text-white/10 rotate-180 ${mobile ? "top-3 right-3 w-6 h-6" : "top-6 right-8 w-12 h-12"
+                    }`}
+            />
+
+            {/* Profile */}
+            <div className="flex items-center gap-3">
+                <img
+                    src={data.img}
+                    alt={data.name}
+                    className={`rounded-full object-cover ${mobile ? "w-12 h-12" : "w-16 h-16"}`}
+                />
+                <div>
+                    <h3 className={`font-bold ${mobile ? "text-sm" : "text-lg"}`}>{data.name}</h3>
+                    <p className={`text-orange-400 uppercase ${mobile ? "text-[10px]" : "text-xs"}`}>
+                        {data.role}
+                    </p>
                 </div>
             </div>
 
-            {/* Mobile Navigation Dots */}
-            <div className="flex justify-center gap-2 mt-8 md:hidden">
-                {testimonials.map((_, i) => (
-                    <button
+            {/* Stars */}
+            <div className="flex gap-1">
+                {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
                         key={i}
-                        onClick={() => setIndex(i)}
-                        className={`transition-all duration-300 rounded-full ${i === index ? 'w-8 h-2 bg-orange-500' : 'w-2 h-2 bg-gray-600'}`}
-                        aria-label={`Go to slide ${i + 1}`}
+                        size={mobile ? 14 : 18}
+                        className={
+                            i < data.stars
+                                ? "fill-orange-500 text-orange-500"
+                                : "fill-gray-800 text-gray-800"
+                        }
                     />
                 ))}
             </div>
 
-        </section>
+            {/* Feedback */}
+            <p className={`italic text-gray-300 ${mobile ? "text-sm leading-snug" : "text-base leading-relaxed"}`}>
+                "{data.feedback}"
+            </p>
+        </div>
     );
 }
+
+

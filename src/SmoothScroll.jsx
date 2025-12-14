@@ -5,11 +5,12 @@ import Lenis from "@studio-freight/lenis";
 export default function SmoothScroll() {
     useEffect(() => {
         const lenis = new Lenis({
-            duration: 1.1,        // smoothness speed
+            duration: 1.2,
             smooth: true,
-            smoothTouch: true,    // important for mobile
-            touchMultiplier: 1.3, // better mobile experience
-        });
+            smoothTouch: false,
+            touchMultiplier: 2,
+            infinite: false,
+        })
 
         function raf(time) {
             lenis.raf(time);
@@ -21,7 +22,9 @@ export default function SmoothScroll() {
             lenis.destroy();
         };
     }, []);
-    
+
+
+
 
     return null;
 }
