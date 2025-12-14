@@ -9,6 +9,28 @@ const ProjectsShowcase = () => {
 
     const projects = [
         {
+            title: 'Weather Forecast App',
+            category: 'JavaScript App',
+            description: 'A real-time weather application showing temperature, humidity, wind speed and dynamic backgrounds based on API data.',
+            image: 'https://images.unsplash.com/photo-1601134467661-3d775b999c8b?w=1200&h=800&fit=crop',
+            tags: ['React', 'OpenWeather API', 'Tailwind'],
+            github: 'https://github.com/piushmaji/Weather_Application',
+            live: 'https://weather-application-cyan-three.vercel.app/',
+            gradient: 'from-blue-500 to-cyan-500',
+            color: 'blue'
+        },
+        {
+            title: 'Responsive Animated Website — K-72',
+            category: 'Frontend + UI/UX',
+            description: 'A high-end animated and fully responsive modern website (K-72) with smooth transitions, scroll-triggered animations, and rich visuals.',
+            image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&h=800&fit=crop',
+            tags: ['React', 'GSAP', 'Tailwind', 'Responsive Design'],
+            github: 'https://github.com/piushmaji/Accuil-K72',
+            live: 'https://accuil-k72.vercel.app/',
+            gradient: 'from-orange-500 to-red-500',
+            color: 'orange'
+        },
+        {
             title: 'Apple Website Clone',
             category: 'Frontend',
             description: 'A pixel-perfect Apple inspired website clone with smooth animations, parallax sections, product showcases, and modern UI transitions.',
@@ -29,28 +51,6 @@ const ProjectsShowcase = () => {
             live: '#',
             gradient: 'from-purple-500 to-pink-500',
             color: 'purple'
-        },
-        {
-            title: 'Weather Forecast App',
-            category: 'JavaScript App',
-            description: 'A real-time weather application showing temperature, humidity, wind speed and dynamic backgrounds based on API data.',
-            image: 'https://images.unsplash.com/photo-1601134467661-3d775b999c8b?w=1200&h=800&fit=crop',
-            tags: ['React', 'OpenWeather API', 'Tailwind'],
-            github: '#',
-            live: '#',
-            gradient: 'from-blue-500 to-cyan-500',
-            color: 'blue'
-        },
-        {
-            title: 'Responsive Animated Website — K-72',
-            category: 'Frontend + UI/UX',
-            description: 'A high-end animated and fully responsive modern website (K-72) with smooth transitions, scroll-triggered animations, and rich visuals.',
-            image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=1200&h=800&fit=crop',
-            tags: ['React', 'GSAP', 'Tailwind', 'Responsive Design'],
-            github: '#',
-            live: '#',
-            gradient: 'from-orange-500 to-red-500',
-            color: 'orange'
         }
     ];
 
@@ -235,11 +235,7 @@ const ProjectsShowcase = () => {
 
                     {/* Center - Scrollable Projects */}
                     <div className="lg:col-span-5 order-1 lg:order-2">
-                        {/* MOBILE FIX:
-                            1. Changed h-[500px] to h-[50vh] md:h-[700px]. This makes it responsive.
-                            2. Added touch-action-pan-y for better mobile scrolling.
-                            3. Added overscroll-behavior-contain to prevent parent scrolling issues.
-                        */}
+
                         <div
                             ref={containerRef}
                             className="h-[50vh] md:h-[600px] lg:h-[700px] w-full overflow-y-auto snap-y snap-mandatory scrollbar-hide relative overscroll-contain touch-pan-y"
