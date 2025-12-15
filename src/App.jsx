@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+// App.tsx
+import { useEffect, useState } from 'react';
 import Header from './components/hero/Header'
 import Hero from './components/hero/Hero'
 import AOS from 'aos';
@@ -10,18 +11,34 @@ import Testimonial from './components/testimonial/Testimonial';
 import Contact from './components/contact/Contact';
 import Footer from './components/footer/Footer';
 import SmoothScroll from './SmoothScroll';
+import Loader from './components/Loader';
+
 const App = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
     AOS.init({
       duration: 1500,
       once: true,
-    })
-  })
+    });
+
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
+
   return (
-    <main>
+    <main className='overflow-x-clip'>
       <SmoothScroll />
       {/* Gradient image */}
-
       <img className='absolute top-0 right-0 opacity-60 -z-1' src="/gradient.png" alt="gradient-img" />
 
       {/* Blur effect */}
